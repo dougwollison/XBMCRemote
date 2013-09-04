@@ -1,6 +1,6 @@
 <?php
-namespace API;
+namespace XJRA;
 
 class GUI extends Method{
-	
+
 }

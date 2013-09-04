@@ -1,5 +1,5 @@
 <?php
-namespace API;
+namespace XJRA;
 
 class Player extends Method{
 	public function PlayPause($play = 'toggle'){
