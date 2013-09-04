@@ -6,7 +6,7 @@ header('Content-type: application/json');
 require 'config.php';
 
 // Load XJRA
-require 'XJRA.php';
+require 'XJRA/_load.php';
 
 // Reply function, outputs the JSON data; an erro message by default
 function reply($message, $error = true){
