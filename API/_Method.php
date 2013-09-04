@@ -1,44 +1,60 @@
 <?php
+namespace API;
+
 class Method{
-	protected $api;
+	protected $API;
 	protected $namespace;
 	
-	public function __construct($api){
-		$this->api = $api;
-		$this->namespace = get_called_class();
+	public function __construct($API){
+		$this->API = $API;
+		$this->namespace = str_replace(__NAMESPACE__.'\\', '', get_called_class());
 	}
 	
-	public function call($name, $args){
+	public function call($name, $params, $cache = false){
+		if($cache && $response = $this->API->Cache->fetch($params)){
+			return $response;
+		}
+	
 		$request = array(
 			'jsonrpc' => '2.0',
-			'method' => "$this->namespace.$name"
+			'method' => sprintf('%s.%s', $this->namespace, $name),
+			'params' => array(),
+			'id' => 0
 		);
 		
-		if(isset($args[0]) && is_array($args[0])){
-			$request['params'] = $args[0];
-			
-			if(isset($args[1])){
-				$request['id'] = $args[0];
+		if(is_array($params)){
+			foreach($params as &$val){
+				if(is_numeric($val) && ((string) intval($val) === $val)){
+					$val = intval($val);
+				}
 			}
-		}elseif(isset($args[0])){
-			$request['id'] = $args[0];
+			$request['params'] = $params;
 		}
 		
 		$json = json_encode($request);
 		
+		$json = str_replace('"params":[]', '"params":{}', $json);
+		
 		$command = sprintf(
 			"curl -X POST -u '%s' -H 'Content-Type: application/json' --data '%s' %s",
-			$this->api->login(),
+			$this->API->login(),
 			str_replace("'", "\'", $json),
-			$this->api->uri()
+			$this->API->uri()
 		);
 		
-		$response = exec($command);
+		exec($command, $response);
 		
-		return json_decode($response);
+		$response = json_decode($response[0]);
+		
+		if($cache){
+			$this->API->Cache->store($params, $response);
+		}
+		
+		return $response;
 	}
 	
 	public function __call($name, $args){
-		return $this->call($name, $args);
+		array_unshift($args, $name);
+		return call_user_func_array(array($this,'call'), $args);
 	}
 }

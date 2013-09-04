@@ -9,27 +9,27 @@ header('Content-type: application/json');
 
 function reply($message, $error = true){
 	if($error){
-		$message = array('error' => $message);
+		$message = array('error' => array('message' => $message));
 	}
 	
 	die(json_encode($message));
 }
 
 if(AJAX){
-	if(!isset($_POST['ns'])) reply('No namespace specified');
-	if(!isset($_POST['method'])) reply('No method specified');
+	if(!isset($_POST['action'])) reply('No action specified');
+	if(!strpos($_POST['action'], '.')) reply('Invalid action specified');
+	list($ns, $method) = explode('.', $_POST['action']);
 	
-	$ns = $_POST['ns'];
-	$method = $_POST['method'];
-	
-	$params = $id = null;
+	$params = $objid = null;
 	
 	if(isset($_POST['params'])) $params = $_POST['params'];
-	if(isset($_POST['id'])) $id = $_POST['id'];
+	if(isset($_POST['objid'])) $objid = $_POST['objid'];
 	
-	$API = new API(HOST, PORT, USER, PASS);
+	$API = new API(XBMC_HOST, XBMC_PORT, XBMC_USER, XBMC_PASS, CACHE_USER, CACHE_PASS, CACHE_NAME, CACHE_HOST, !isset($_POST['fresh']));
 	
 	if(!property_exists($API, $ns)) reply('Namespace does not exist');
 	
-	$API->$ns->$method($params, $id);
+	$response = $API->$ns->$method($params, $objid);
+	
+	reply($response, false);
 }
