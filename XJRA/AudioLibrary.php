@@ -1,6 +1,6 @@
 <?php
 namespace XJRA;
 
-class AudioLibrary extends Method{
+class AudioLibrary extends Library{
 
 }
