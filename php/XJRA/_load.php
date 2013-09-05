@@ -1,6 +1,6 @@
 <?php
 // Load utility classes
-require 'utility/_Cache.php';
+require 'utility/Cache.php';
 
 // Load base classes
 require 'base/Method.php';
