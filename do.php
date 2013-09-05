@@ -3,7 +3,7 @@
 header('Content-type: application/json');
 
 // Load config
-require 'php/config.php';
+require 'config.php';
 
 // Load XJRA
 require 'php/XJRA/_load.php';
