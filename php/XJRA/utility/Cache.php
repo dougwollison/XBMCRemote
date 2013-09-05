@@ -13,6 +13,9 @@ class Cache{
 
 	// Table name
 	protected $table = 'XBMCRemote_Cache';
+	
+	// Ready flag
+	public $ready;
 
 	/*
 	 * Constructor method, for configuration and creating the MySQLi handler
@@ -22,6 +25,17 @@ class Cache{
 	public function __construct($host, $user, $pass, $name){
 		// Initialize the MySQLi object for $dbh
 		$this->dbh = new \MySQLi($host, $user, $pass, $name);
+		
+		// Create the table if it doesn't exist
+		$this->dbh->query("
+		CREATE TABLE `$this->table` (
+			`key` varchar(40) NOT NULL,
+			`request` text NOT NULL,
+			`response` longtext NOT NULL,
+			`date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+			UNIQUE KEY `key` (`key`)
+		) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+		");
 	}
 
 	/*
