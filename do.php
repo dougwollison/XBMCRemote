@@ -3,10 +3,10 @@
 header('Content-type: application/json');
 
 // Load config
-require 'config.php';
+require 'php/config.php';
 
 // Load XJRA
-require 'XJRA/_load.php';
+require 'php/XJRA/_load.php';
 
 // Reply function, outputs the JSON data; an erro message by default
 function reply($message, $error = true){
